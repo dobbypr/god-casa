@@ -1,0 +1,2 @@
+Placeholder sprite reference for prototyping.
+Use this as a guide to replace with real art assets.
