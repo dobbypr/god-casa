@@ -1,0 +1,30 @@
+# Compiled object files
+*.o
+*.obj
+
+# Compiled binaries / executables
+god-casa
+god-casa.exe
+a.out
+
+# Build directories
+build/
+bin/
+out/
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Editor/IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS-specific files
+.DS_Store
+Thumbs.db
