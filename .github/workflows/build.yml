@@ -1,0 +1,63 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 3.1.50
+
+      - name: Clone PDCurses
+        run: git clone --depth=1 --branch 3.9 https://github.com/wmcbrine/PDCurses.git
+
+      - name: Compile C with Emscripten
+        run: |
+          mkdir -p dist include-compat
+          printf '#pragma once\n#include <curses.h>\n' > include-compat/ncurses.h
+          emcc main.c \
+            PDCurses/pdcurses/*.c \
+            PDCurses/sdl2/*.c \
+            -I PDCurses \
+            -I include-compat \
+            -DPDC_SDL2 \
+            -o dist/index.html \
+            -sUSE_SDL=2 \
+            -sASYNCIFY \
+            -sALLOW_MEMORY_GROWTH=1
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

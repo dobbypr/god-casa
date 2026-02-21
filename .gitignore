@@ -11,6 +11,7 @@ a.out
 build/
 bin/
 out/
+dist/
 
 # Debug files
 *.dSYM/
