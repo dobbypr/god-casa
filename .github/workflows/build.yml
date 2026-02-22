@@ -41,7 +41,7 @@ jobs:
           mkdir -p dist include-compat
           printf '#pragma once\n#include <curses.h>\n' > include-compat/ncurses.h
           touch dist/.nojekyll
-          emcc main.c \
+          emcc main.c simulation.c \
             PDCurses/pdcurses/*.c \
             PDCurses/sdl2/*.c \
             -I PDCurses \
