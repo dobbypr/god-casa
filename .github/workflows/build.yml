@@ -49,7 +49,6 @@ jobs:
             -DPDC_SDL2 \
             -o dist/index.html \
             -sUSE_SDL=2 \
-            -sASYNCIFY \
             -sALLOW_MEMORY_GROWTH=1
 
       - name: Upload Pages artifact

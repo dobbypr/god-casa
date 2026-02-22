@@ -36,6 +36,10 @@
 #include <math.h>
 #include <ncurses.h>
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
 #include "simulation.h"
 
 /* ======================================================================
@@ -857,6 +861,21 @@ static void ncurses_init(void)
 /* ======================================================================
    MAIN
    ====================================================================== */
+#ifdef __EMSCRIPTEN__
+static void em_main_loop(void)
+{
+    int ch = getch();
+    if (ch != ERR) handle_input(ch);
+    if (quitting) {
+        emscripten_cancel_main_loop();
+        endwin();
+        return;
+    }
+    if (!paused) sim_step();
+    render();
+}
+#endif
+
 int main(void)
 {
     srand((unsigned)time(NULL));
@@ -875,6 +894,9 @@ int main(void)
     cur_x = WW/2;
     cur_y = WH/2;
 
+#ifdef __EMSCRIPTEN__
+    emscripten_set_main_loop(em_main_loop, 20, 1); /* 20 fps */
+#else
     struct timespec frame_time = { 0, 50000000L }; /* 50 ms → ~20 fps */
 
     while (!quitting) {
@@ -892,5 +914,6 @@ int main(void)
         printf("  %-8s  units:%-4d  villages:%-4d  kills:%-4d\n",
                C[i].name, C[i].units, C[i].villages, C[i].kills);
     }
+#endif
     return 0;
 }
