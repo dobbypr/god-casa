@@ -44,11 +44,13 @@ jobs:
           emcc main.c simulation.c \
             PDCurses/pdcurses/*.c \
             PDCurses/sdl2/*.c \
+            -Oz \
             -I PDCurses \
             -I include-compat \
             -DPDC_SDL2 \
             -o dist/index.html \
             -sUSE_SDL=2 \
+            -sENVIRONMENT=web \
             -sALLOW_MEMORY_GROWTH=1
 
       - name: Upload Pages artifact
