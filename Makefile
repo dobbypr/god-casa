@@ -3,8 +3,10 @@ CFLAGS  = -O2 -Wall -Wextra -Wpedantic
 LDFLAGS = -lncurses -lm
 TARGET  = god-casa
 
-$(TARGET): main.c
-	$(CC) $(CFLAGS) -o $(TARGET) main.c $(LDFLAGS)
+SRCS = main.c simulation.c
+
+$(TARGET): $(SRCS) simulation.h
+	$(CC) $(CFLAGS) -o $(TARGET) $(SRCS) $(LDFLAGS)
 
 clean:
 	rm -f $(TARGET)
