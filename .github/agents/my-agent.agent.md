@@ -5,7 +5,7 @@
 # For format details, see: https://gh.io/customagents/config
 
 name: PR AGENT
-description:
+description: acts as pr
 ---
 
 # My Agent
