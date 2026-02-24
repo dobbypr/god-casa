@@ -606,12 +606,12 @@ static void render(void)
     view_h = rows - 2;  /* 2 status lines at bottom */
 
     /* Clamp camera */
+    if (view_w > WW) { view_w = WW; cam_x = 0; }
+    if (view_h > WH) { view_h = WH; cam_y = 0; }
     if (cam_x < 0) cam_x = 0;
     if (cam_y < 0) cam_y = 0;
     if (cam_x > WW - view_w) cam_x = WW - view_w;
     if (cam_y > WH - view_h) cam_y = WH - view_h;
-    if (view_w > WW) { view_w = WW; cam_x = 0; }
-    if (view_h > WH) { view_h = WH; cam_y = 0; }
 
     /* ── World view ── */
     for (int sy = 0; sy < view_h; sy++) {
