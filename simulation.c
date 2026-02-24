@@ -640,11 +640,12 @@ void env_fire_spread(EnvSoA *e, float spread_prob, float dt)
 /*
  * env_fire_consume — Fire burns available fuel; intensity drops when fuel runs out.
  *   fuel -= consume_rate * fire_intensity * dt
- *   intensity scales with remaining fuel
+ *   intensity decays by a fixed small rate while fuel remains
  */
 void env_fire_consume(EnvSoA *e, float dt)
 {
-    const float consume_rate = 0.1f;
+    const float consume_rate  = 0.1f;
+    const float decay_rate    = 0.01f; /* fixed intensity loss per unit time while fuel remains */
     for (int i = 0; i < e->count; i++) {
         if (e->fire_intensity[i] <= 0.0f) continue;
         float burned = consume_rate * e->fire_intensity[i] * dt;
@@ -653,7 +654,7 @@ void env_fire_consume(EnvSoA *e, float dt)
         if (e->fuel[i] <= 0.0f)
             e->fire_intensity[i] = 0.0f;
         else
-            e->fire_intensity[i] *= e->fuel[i]; /* scale down gracefully */
+            e->fire_intensity[i] = clampf(e->fire_intensity[i] - decay_rate * dt, 0.0f, 1.0f);
     }
 }
 
