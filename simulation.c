@@ -1187,12 +1187,16 @@ void tech_research_tick(TechSoA *t, const PopSoA *p, float dt)
 
 /*
  * tech_cost_scale — tech_cost grows exponentially with tech_level.
- *   cost = 100 * exp(tech_level * 0.3)
+ *   cost = 100 * exp(clamp(tech_level * 0.3, 0, 20))
+ *   Exponent is clamped to 20 (exp(20) ≈ 485M) to prevent overflow to
+ *   INFINITY at high tech levels, which would permanently stall progression.
  */
 void tech_cost_scale(TechSoA *t)
 {
-    for (int i = 0; i < t->count; i++)
-        t->tech_cost[i] = 100.0f * expf(t->tech_level[i] * 0.3f);
+    for (int i = 0; i < t->count; i++) {
+        float exponent = clampf(t->tech_level[i] * 0.3f, 0.0f, 20.0f);
+        t->tech_cost[i] = 100.0f * expf(exponent);
+    }
 }
 
 /*
