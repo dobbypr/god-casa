@@ -1320,8 +1320,10 @@ void engine_entropy_increase(EngineSoA *e, float dt)
 }
 
 /*
- * engine_stability_update — Stability is the complement of entropy, boosted by tech.
- *   stability = (1 - entropy) * (0.5 + 0.5 * tech_level_norm)
+ * engine_stability_update — Stability is the complement of entropy, boosted by tech,
+ *   and reduced by population pressure (overpopulation destabilises a civilisation).
+ *   pop_pressure  = population / (carrying_cap + 1)  clamped to [0, 1]
+ *   stability = (1 - entropy) * (0.5 + 0.5 * tech_level_norm) * (1 - 0.5 * pop_pressure)
  */
 void engine_stability_update(EngineSoA *e, const TechSoA *t)
 {
@@ -1329,8 +1331,11 @@ void engine_stability_update(EngineSoA *e, const TechSoA *t)
         float tech_norm = (i < t->count)
                           ? clampf(t->tech_level[i] / 50.0f, 0.0f, 1.0f)
                           : 0.5f;
+        float pop_pressure = (i < p->count)
+                             ? clampf(p->population[i] / (p->carrying_cap[i] + 1.0f), 0.0f, 1.0f)
+                             : 0.0f;
         e->stability[i] = clampf(
-            (1.0f - e->entropy[i]) * (0.5f + 0.5f * tech_norm),
+            (1.0f - e->entropy[i]) * (0.5f + 0.5f * tech_norm) * (1.0f - 0.5f * pop_pressure),
             0.0f, 1.0f);
     }
 }
