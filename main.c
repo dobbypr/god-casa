@@ -573,6 +573,7 @@ static void tile_glyph(int wx, int wy, int *ch, int *cp, int *attr)
             case E_VILLAGE: *ch = 'V'; return;
             case E_CITY:    *ch = 'C'; return;
             case E_MONSTER: *ch = 'M'; *cp = CP_MON; return;
+            default:        *ch = '?'; *cp = CP_UI;  return;
         }
     }
     switch (t->t) {
