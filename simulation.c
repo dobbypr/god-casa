@@ -20,6 +20,9 @@
    INTERNAL HELPERS
    ====================================================================== */
 
+/* Maximum allowed market price — prevents multiplicative divergence to infinity. */
+#define MAX_PRICE 1000.0f
+
 /* Clamp a float to [lo, hi]. */
 static float clampf(float v, float lo, float hi)
 {
@@ -498,15 +501,14 @@ void econ_deplete(EconSoA *e, float dt)
 
 /*
  * econ_market_price — Price adjusts by square-root of demand/supply ratio.
- *   price_new = base_price * sqrt(demand / max(supply, 1))
+ *   price_new = clamp(price * sqrt(demand / max(supply, 1)), 0.01, MAX_PRICE)
  */
 void econ_market_price(EconSoA *e)
 {
     for (int i = 0; i < e->count; i++) {
         float sup = e->supply[i] > 1.0f ? e->supply[i] : 1.0f;
         float base = e->price[i] > 0.0f ? e->price[i] : 1.0f;
-        e->price[i] = base * sqrtf(e->demand[i] / sup);
-        if (e->price[i] < 0.01f) e->price[i] = 0.01f;
+        e->price[i] = clampf(base * sqrtf(e->demand[i] / sup), 0.01f, MAX_PRICE);
     }
 }
 
