@@ -316,7 +316,7 @@ void tech_diffusion(const TechSoA *src, TechSoA *dst, int si, int di, float rate
 /* --- 10. Engine & End Game --- */
 void engine_fast_inv_sqrt(EngineSoA *e);
 void engine_entropy_increase(EngineSoA *e, float dt);
-void engine_stability_update(EngineSoA *e, const PopSoA *p, const TechSoA *t);
+void engine_stability_update(EngineSoA *e, const TechSoA *t);
 void engine_spatial_grid_assign(EngineSoA *e, const MoveSoA *m, float cell_size);
 void engine_end_timer_tick(EngineSoA *e, float dt);
 void engine_victory_pts_update(EngineSoA *e, const PopSoA *p, const TechSoA *t);
