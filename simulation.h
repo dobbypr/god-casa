@@ -26,6 +26,10 @@
 
 #include <stdint.h>
 
+/* Incremented each game tick; XORed into LCG seeds so that roll results
+   vary between ticks for the same entity index. */
+extern uint32_t global_tick;
+
 /* ======================================================================
    1. POPULATION DYNAMICS — SoA
    ====================================================================== */

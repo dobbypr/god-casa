@@ -546,6 +546,7 @@ static void sim_monster_spawn(void)
 static void sim_step(void)
 {
     tick++;
+    global_tick++;
     sim_monster_spawn();
     for (int i = 0; i < MAX_E; i++) {
         if (!E[i].alive) continue;

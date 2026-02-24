@@ -6,8 +6,9 @@
  * simulation.c — Batch-processing implementations for all 100 DOD formulas.
  *
  * Every function iterates over the SoA arrays in a tight loop for cache
- * locality.  No global state is used; all data lives in the caller-supplied
- * SoA structs.
+ * locality.  All data lives in the caller-supplied SoA structs.
+ * global_tick is the only global state; it is incremented each game tick
+ * and XORed into LCG seeds so that roll results vary between ticks.
  */
 
 #include "simulation.h"
@@ -15,6 +16,10 @@
 #include <math.h>
 #include <stdint.h>
 #include <string.h>
+
+/* Incremented each game tick by the caller; XORed into LCG seeds so that
+   roll results differ between ticks for the same entity index. */
+uint32_t global_tick = 0u;
 
 /* ======================================================================
    INTERNAL HELPERS
@@ -276,7 +281,7 @@ void faith_heresy_spread(FaithSoA *f, float dt)
 void faith_miracle_check(FaithSoA *f, int *miracle_out)
 {
     for (int i = 0; i < f->count; i++) {
-        uint32_t seed = (uint32_t)(i + 1) * 2654435761u;
+        uint32_t seed = ((uint32_t)(i + 1) * 2654435761u) ^ global_tick;
         float roll = lcg_float(&seed);
         miracle_out[i] = (roll < f->miracle_chance[i] * f->divine_favor[i]) ? 1 : 0;
     }
@@ -387,7 +392,7 @@ void combat_armor_mitigation(const CombatSoA *c, float *dmg_inout)
 void combat_hit_roll(const CombatSoA *c, int attacker, int *hit_out)
 {
     if (attacker < 0 || attacker >= c->count) { *hit_out = 0; return; }
-    uint32_t seed = (uint32_t)(attacker + 1) * 2246822519u;
+    uint32_t seed = ((uint32_t)(attacker + 1) * 2246822519u) ^ global_tick;
     *hit_out = (lcg_float(&seed) < c->hit_chance[attacker]) ? 1 : 0;
 }
 
@@ -397,7 +402,7 @@ void combat_hit_roll(const CombatSoA *c, int attacker, int *hit_out)
 void combat_crit_roll(const CombatSoA *c, int attacker, float *dmg_mult_out)
 {
     if (attacker < 0 || attacker >= c->count) { *dmg_mult_out = 1.0f; return; }
-    uint32_t seed = (uint32_t)(attacker + 1) * 3266489917u;
+    uint32_t seed = ((uint32_t)(attacker + 1) * 3266489917u) ^ global_tick;
     *dmg_mult_out = (lcg_float(&seed) < c->crit_chance[attacker])
                     ? c->crit_mult[attacker] : 1.0f;
 }
