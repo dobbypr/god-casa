@@ -516,20 +516,20 @@ static void sim_building(int eid)
 {
     Ent *e = &E[eid];
     e->age++;
+    /* Village → City upgrade: runs every tick, independent of spawn timer */
+    if (e->kind == E_VILLAGE && e->age >= VILLAGE_AGE_UP) {
+        e->kind        = E_CITY;
+        e->max_hp      = CITY_HP;
+        e->hp          = CITY_HP;
+        e->spawn_timer = CITY_SPAWN_INT;
+        /* village count unchanged: cities are still tracked as villages in the UI */
+    }
     if (--e->spawn_timer <= 0) {
         e->spawn_timer = (e->kind == E_CITY) ? CITY_SPAWN_INT : UNIT_SPAWN_INT;
         if (e->civ >= 0 && C[e->civ].units < MAX_UNITS_CIV) {
             int ux = e->x, uy = e->y;
             if (find_nearby_land(&ux, &uy))
                 ent_place(E_UNIT, e->civ, ux, uy);
-        }
-        /* Village → City upgrade */
-        if (e->kind == E_VILLAGE && e->age >= VILLAGE_AGE_UP) {
-            e->kind        = E_CITY;
-            e->max_hp      = CITY_HP;
-            e->hp          = CITY_HP;
-            e->spawn_timer = CITY_SPAWN_INT;
-            /* village count unchanged: cities are still tracked as villages in the UI */
         }
     }
 }
