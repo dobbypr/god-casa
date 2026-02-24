@@ -1,0 +1,27 @@
+name: PR Check
+
+on:
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Native build with strict warnings
+        run: gcc -O2 -Wall -Wextra -Wpedantic -Werror -o god-casa main.c simulation.c -lncurses -lm
+
+      - name: Static analysis with cppcheck
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq cppcheck > /dev/null
+          cppcheck --enable=warning,performance,portability \
+            --error-exitcode=1 \
+            --suppress=missingIncludeSystem \
+            main.c simulation.c
