@@ -805,6 +805,9 @@ static void handle_input(int ch)
         case '\t': sel_civ = (sel_civ + 1) % NCIV; break;
         /* Civ direct select */
         case '!': sel_civ = 0; break; /* shift-1 on some terminals */
+        case '@': sel_civ = 1; break; /* shift-2 */
+        case '#': sel_civ = 2; break; /* shift-3 */
+        case '$': sel_civ = 3; break; /* shift-4 */
         /* Pause */
         case ' ': paused = !paused; break;
         /* Quit */
