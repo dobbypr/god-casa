@@ -353,15 +353,14 @@ void faith_devotee_update(FaithSoA *f, float dt)
    ====================================================================== */
 
 /*
- * combat_apply_damage — Deal raw_dmg to defender, reduced by half their armour.
- *   Minimum 1 damage always applied.
+ * combat_apply_damage — Deal raw_dmg to defender, boosted by 10% of attacker's
+ *   base_atk and reduced by half defender's armour.  Minimum 1 damage applied.
  */
 void combat_apply_damage(CombatSoA *c, int attacker, int defender, float raw_dmg)
 {
     if (attacker < 0 || attacker >= c->count) return;
     if (defender < 0 || defender >= c->count) return;
-    (void)attacker;
-    float dmg = raw_dmg - c->armor[defender] * 0.5f;
+    float dmg = raw_dmg + c->base_atk[attacker] * 0.1f - c->armor[defender] * 0.5f;
     if (dmg < 1.0f) dmg = 1.0f;
     c->hp[defender] = clampf(c->hp[defender] - dmg, 0.0f, c->max_hp[defender]);
 }
